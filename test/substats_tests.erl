@@ -36,7 +36,7 @@ test_subscriber_health() ->
     IntervalThreeKey = ez_data:chroot_path(?SUBSTATS_ROOT ++ "/", ?INTERVAL3),
 	lager:info("Interval keys: ~p, ~p, ~p", [IntervalOneKey, IntervalTwoKey, IntervalThreeKey]),
 	
-    {ok, IntervalOneKey} = ez_data:create(IntervalOneKey, <<"test data">>),
+    {ok, IntervalOneKey} = ez_data:create(IntervalOneKey, <<"test data">>, es),
 
     % create/get test
     {ok, _} = ez_data:exists(IntervalOneKey),

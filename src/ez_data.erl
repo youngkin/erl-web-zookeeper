@@ -7,6 +7,7 @@
     chroot/0,
 	chroot_path/2,
     create/2,
+	create/3,
     delete/1,
     exists/1,
     add_consumer/1,
@@ -57,6 +58,11 @@ chroot() ->
 % Creates a ZK node `Path` and sets its initial value to `Data`.
 create(Path, Data) when is_binary(Data) ->
     gen_server:call(?MODULE, {create, Path, Data}).
+
+% Creates a ZK node `Path` and sets its initial value to `Data`. 'Typ' specifies
+% ephemeral (e), sequence (s), or ephemeral/sequence (es).  
+create(Path, Data, Typ) when is_binary(Data) ->
+    gen_server:call(?MODULE, {create, Path, Data, Typ}).
 
 % Deletes a ZK node `Path`.
 delete(Path) ->
@@ -126,6 +132,12 @@ handle_call(Request, _From, #state{zk_connection = undefined} = State) ->
 handle_call({create, Path, Data}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:create(ZK, FullPath, Data),
+    lager:info("{create ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    {reply, ZKResponse, State};
+
+handle_call({create, Path, Data, Typ}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
+    FullPath = chroot_path(Chroot, Path),
+    ZKResponse = ezk:create(ZK, FullPath, Data, Typ),
     lager:info("{create ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 

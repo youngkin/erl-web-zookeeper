@@ -11,9 +11,10 @@
                   syntax_tools,
                   goldrush,
                   lager,
-                  ezk
+                  ezk,
+                  cowboy
                  ]},
-  {deps, [sasl, syntax_tools, compiler, syntax_tools, goldrush, lager, ezk]},
+  {deps, [sasl, syntax_tools, compiler, syntax_tools, goldrush, lager, ezk, cowboy]},
   {mod, { ez_app, []}},
   {hosts, [{localhost, 2181},
 		{ localhost, 2182},
@@ -21,5 +22,6 @@
 
 	},
   {start_phases, [{init, []}]},
-  {chroot, ""}
+  {chroot, ""},
+  {env, [{http_port, 8080}]}
  ]}.

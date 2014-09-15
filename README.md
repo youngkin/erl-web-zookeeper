@@ -18,7 +18,13 @@ wanted to get it up on github.
 [http://zookeeper.apache.org/](Apache Zookeeper) is one of the cornerstones for this project. Most all other external dependencies are handled by rebar.
 * At least one zookeeper instance should be available.  The src/ez.app.src file contains the configuration for Zookeeper.  The `{hosts {...}}` tuple should be modified to match up with the Zookeeper installation.
 
-# TODO
+# Setup
+## Release
+## Rebar / make
+## Zookeeper
+## Cowboy
+
+# Tasks
 1. Package as a release and distribute. Document how to do this.
 3. Get config data from Zookeeper
 3. Implement ReST interfaces

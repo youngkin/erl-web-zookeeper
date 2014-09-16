@@ -52,7 +52,8 @@ setup_cowboy() ->
 routes() ->
     [
      {'_', [
-            {"/status", ez_status, []}
+            {"/status", ez_status_handler, []},
+            {"/weather", ez_weather_handler, []}
            ]}
     ].
 

@@ -1,12 +1,16 @@
 %% @author uyounri
 %% @doc @todo Add description to status.
 
--module(ez_status).
+-module(ez_status_handler).
 
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([init/3, content_types_provided/2, status_to_html/2, status_to_json/2, status_to_text/2]).
+-export([init/3, 
+        content_types_provided/2, 
+        status_to_html/2, 
+        status_to_json/2, 
+        status_to_text/2]).
 
 init(_Transport, _Req, []) ->
     {upgrade, protocol, cowboy_rest}.
@@ -59,9 +63,9 @@ status_to_text(Req, State) ->
     Body = <<Beginning/binary, PortBin/binary>>,
     {Body, Req, State}.
 
-%% --------------------------------------------------------------
+%% ====================================================================
 %% Internal Functions
-%% --------------------------------------------------------------
+%% ====================================================================
 get_status() ->
     Port = application:get_env(ez,http_port),
     lager:debug("Cowboy listener port: ~p", [Port]),

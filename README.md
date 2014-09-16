@@ -20,22 +20,22 @@ wanted to get it up on github.
 
 # Building
 This could be better, i.e., with make handling all this.
-'''$ ./rebar get-deps'''
-'''$ ./rebar compile
+`$ ./rebar get-deps`
+`$ ./rebar compile`
 
 # Running
-'''$ ./start'''
-'''$ ./start_in_shell''' starts the service in an Erlang shell'''
+`$ ./start`
+`$ ./start_in_shell` starts the service in an Erlang shell
 
 # Take it for a spin
 1. Retrieve service status in JSON, HTTP, or plain text formats
-'''curl -i -H "Accept: application/json" http://localhost:8080/status'''
-'''curl -i -H "Accept: text/html" http://localhost:8080/status'''
-'''curl -i -H "Accept: text/plain" http://localhost:8080/status'''
+`curl -i -H "Accept: application/json" http://localhost:8080/status`
+`curl -i -H "Accept: text/html" http://localhost:8080/status`
+`curl -i -H "Accept: text/plain" http://localhost:8080/status`
 2. GET data (weather) from service. It currently returns a hard-coded response.
-'''curl -i -H "Accept: application/json" http://localhost:8080/weather'''
+`curl -i -H "Accept: application/json" http://localhost:8080/weather`
 3. POST data (weather) to service. It currently only echoes what was POSTed.
-'''curl -i -X POST -H "Content-Type: application/json" -d 'here is some weather info' http://localhost:8080/weather'''
+`curl -i -X POST -H "Content-Type: application/json" -d 'here is some weather info' http://localhost:8080/weather`
 
 # Setup - TODO
 ## Release - TODO

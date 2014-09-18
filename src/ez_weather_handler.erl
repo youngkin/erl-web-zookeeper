@@ -32,6 +32,8 @@ rest_init(_Req, _Opts) ->
     %% TODO: It's expected that the base URL is just one item that will need to
     %% be retrieved from the app resource file and stored as State that can be
     %% referenced at runtime.
+%% TODO: is this even needed? get_base url/0 does this and needs to get it from config as fqdn 
+%% might be a proxy
     State = "http://example.com",
     {ok, _Req, State}.
 
@@ -50,63 +52,82 @@ content_types_accepted(Req, State) ->
 
 to_html_weather(Req, State) ->
     %% Get the value associated with the ":resource" binding (i.e., "city" or "cities")
-    {RequestedResource, Req2} = get_resource_from_url(Req),
-    %% TODO: validateResource()
-
+    {RequestedResourceBinary, Req2} = get_resource_from_url(Req),
     %% Get the value associated with the ":city" binding (i.e., the value of city in the request)
-    {RequestedCity, Req3} = get_city_from_url(Req2),
-    %% TODO: validateCity()
+    {RequestedCityBinary, Req3} = get_city_from_url(Req2),
     
+    RequestedResource = binary_to_list(RequestedResourceBinary),
+    RequestedCity = case is_atom(RequestedCityBinary) of
+                        false -> binary_to_list(RequestedCityBinary);
+                        %% RequestedCity will only be an atom if it wasn't part of the URL.
+                        %% In this case it's value is never used.
+                        true -> undefined
+                    end,
+
     lager:debug("Binding values [resource, city]: [~p, ~p]", [RequestedResource, RequestedCity]),
+    ResourceValid = validate_resource(RequestedResource),
+    lager:debug("Is the URL valid? ~p", [ResourceValid]),
     
-    ReturnBody = case RequestedResource of
-        <<"city">> -> build_city_data_html(RequestedCity);
-        <<"cities">> -> build_cities_data_html(State)
+    ReplyOrHalt = case ResourceValid of
+        ok -> 
+            ReturnBody = case RequestedResource of
+                "city" -> build_city_data_html(RequestedCity);
+                "cities" -> build_cities_data_html()
+            end,
+            
+            lager:debug("City weather as HTML: ~p", [ReturnBody]),
+            HtmlStart = <<"<html>
+                <head>
+                    <meta charset=\"utf-8\">
+                    <title>EZ Weather Service</title>
+                </head>
+                <body>">>,
+                    
+            HtmlEnd = <<"</body>\n</html>">>,
+            
+            Body = <<HtmlStart/binary, ReturnBody/binary, HtmlEnd/binary>>;
+        _ ->
+            cowboy_req:reply(400, Req3),
+            halt
     end,
     
-    lager:debug("City weather as HTML: ~p", [ReturnBody]),
-    
-    HtmlStart = <<"<html>
-<head>
-    <meta charset=\"utf-8\">
-    <title>EZ Weather Service</title>
-</head>
-<body>">>,
-    
-    HtmlEnd = <<"</body>
-</html>">>,
-    
-    Body = <<HtmlStart/binary, ReturnBody/binary, HtmlEnd/binary>>,
-    {Body, Req3, State}.
+    %% ReplyOrHalt contains HTML if validation passed, halt otherwise
+    {ReplyOrHalt, Req3, State}.
 
 
 to_json_weather(Req, State) ->
     %% Get the value associated with the ":resource" binding (i.e., "city" or "cities")
-    {RequestedResource, Req2} = get_resource_from_url(Req),
-    %% TODO: validateResource()
-
+    {RequestedResourceBinary, Req2} = get_resource_from_url(Req),
     %% Get the value associated with the ":city" binding (i.e., the value of city in the request)
-    {RequestedCity, Req3} = get_city_from_url(Req2),
-    %% TODO: validateCity()
+    {RequestedCityBinary, Req3} = get_city_from_url(Req2),
     
+    RequestedResource = binary_to_list(RequestedResourceBinary),
+    RequestedCity = case is_atom(RequestedCityBinary) of
+                        false -> binary_to_list(RequestedCityBinary);
+                        %% RequestedCity will only be an atom if it wasn't part of the URL
+                        %% In this case it's value is never used.
+                        true -> undefined
+                    end,
+
     lager:debug("Binding values [resource, city]: [~p, ~p]", [RequestedResource, RequestedCity]),
-    
-    ReturnBody = case RequestedResource of
-        <<"city">> -> build_city_data_json(RequestedCity);
-        <<"cities">> -> build_cities_data_json(State)
+    ResourceValid = validate_resource(RequestedResource),
+    lager:debug("Is the URL valid? ~p", [ResourceValid]),
+
+    ReplyOrHalt = case ResourceValid of
+        ok -> 
+            ReturnBody = case RequestedResource of
+                "city" -> build_city_data_json(RequestedCity);
+                "cities" -> build_cities_data_json()
+            end,
+            lager:debug("City weather as JSONs: ~p", [ReturnBody]),
+            ReturnBody;
+        _ ->
+            cowboy_req:reply(400, Req3),
+            halt
     end,
-    
-    lager:debug("City weather as JSONs: ~p", [ReturnBody]),
-    
-%%
-%%
-%% TODO: start here.  Hook in validateResource and validateCity/1 and use the cowboy_req:reply and
-%%       {halt,... ,..} statments below if case they fail to validate.
-%%
-%%
-    cowboy_req:reply(400, Req3),
-    {halt, Req3, State}.
-%%     {ReturnBody, Req3, State}.
+            
+    %% ReplyOrHalt contains HTML if validation passed, halt otherwise
+    {ReplyOrHalt, Req3, State}.
 
 to_text_weather(Req, State) ->
     to_json_weather(Req, State).
@@ -138,9 +159,11 @@ build_city_data_html(RequestedCity) ->
     WeatherPrefix = <<"\"</p>
        <p>\"weather\" : \"">>,
     End = <<"\"}</p>">>,
-    <<CityPrefix/binary, RequestedCity/binary, WeatherPrefix/binary, CityWeather/binary, End/binary>>.
+    RequestedCityBinary = list_to_binary(RequestedCity),
+    <<CityPrefix/binary, RequestedCityBinary/binary, WeatherPrefix/binary, CityWeather/binary, End/binary>>.
 
-build_cities_data_html(BaseUrl) ->
+build_cities_data_html() ->
+    BaseUrl = get_base_url(),
     %% ["denver", "tucson", "seattle"]
     CityList = get_cities(),
     
@@ -168,9 +191,12 @@ build_city_data_json(RequestedCity) ->
     CityPrefix = <<"{\"city\"   : \"">>,
     WeatherPrefix = <<"\", \"weather\" : \"">>,
     End = <<"\"}">>,
-    <<CityPrefix/binary, RequestedCity/binary, WeatherPrefix/binary, CityWeather/binary, End/binary>>.
+    RequestedCityBinary = list_to_binary(RequestedCity),
+    <<CityPrefix/binary, RequestedCityBinary/binary, WeatherPrefix/binary, CityWeather/binary, End/binary>>.
 
-build_cities_data_json(BaseUrl) ->
+build_cities_data_json() ->
+    BaseUrl = get_base_url(),
+    
     %% ["denver", "tucson", "seattle"]
     CityList = get_cities(),
     
@@ -203,11 +229,12 @@ build_cities_data_json(BaseUrl) ->
     BinaryContent = list_to_binary(DisplayListTrimmed),
     << <<"{">>/binary, BinaryContent/binary, <<"}">>/binary >>.
 
-%% validate_resource(Resource) ->
-%%     case Resource of ->
-%%         weather -> ok;
-%%         _ -> not_ok
-%%     end.
+validate_resource(Resource) ->
+    case Resource of
+        "city" -> ok;
+        "cities" -> ok;
+        _ -> error
+    end.
 
 validate_request(Req) ->
     finish_this.
@@ -221,4 +248,13 @@ get_city_weather(City) ->
     %% TODO: get from Zookeeper
     <<"cloudy">>.
 
+get_base_url() ->
+    HttpHost = case application:get_env(ez, http_host) of
+        {ok, HostName} -> lager:debug("Got http_host from application resource file."),
+                          HostName;
+        undefined -> "localhost";
+        {_, _} -> "localhost"
+    end,
+    lager:debug("HttpHost for resource URL: ~p", [HttpHost]),
+    HttpHost.
 

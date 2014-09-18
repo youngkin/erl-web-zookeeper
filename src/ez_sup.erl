@@ -15,6 +15,10 @@
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
+%% TODO: What's this for???
+reconfigure() ->
+    superman:reconfigure_supervisor_init_args(?MODULE, []).
+
 %% ===================================================================
 %% Supervisor callbacks
 %% ===================================================================
@@ -25,26 +29,30 @@ init([]) ->
 		{ localhost, 2182,30000,10000},
 		{ localhost, 2183,30000,10000}],"",[]]},permanent,5000,worker,[ez_data]}]}}.
 
-specs() ->
-    case application:get_all_key(ez) of
-        {ok, ZK} ->
-            [
-		        {
-			        ez,
-			        {
-				        ez,
-				        start_link,
-				        [
-					        [{Host, Port, 30000, 10000} || [Host, Port] <- proplists:get_value(hosts, ZK)],
-					        proplists:get_value(chroot, ZK),
-					        []
-				        ]
-			        },
-			        permanent, 10000, worker, [ez]
-		        }
-	        ];
-        _ -> lager:error("Config is not available, starting empty"),[]
-    end.
+%% ===================================================================
+%% Internal functions
+%% ===================================================================
 
-reconfigure() ->
-    superman:reconfigure_supervisor_init_args(?MODULE, []).
+%% TODO: Add back so that the values for the Zookeeper servers can be substituted at runtime
+%%
+%% specs() ->
+%%     case application:get_all_key(ez) of
+%%         {ok, ZK} ->
+%%             [
+%% 		        {
+%% 			        ez,
+%% 			        {
+%% 				        ez,
+%% 				        start_link,
+%% 				        [
+%% 					        [{Host, Port, 30000, 10000} || [Host, Port] <- proplists:get_value(hosts, ZK)],
+%% 					        proplists:get_value(chroot, ZK),
+%% 					        []
+%% 				        ]
+%% 			        },
+%% 			        permanent, 10000, worker, [ez]
+%% 		        }
+%% 	        ];
+%%         _ -> lager:error("Config is not available, starting empty"),[]
+%%     end.
+

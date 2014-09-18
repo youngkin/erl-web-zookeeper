@@ -50,10 +50,20 @@ setup_cowboy() ->
     end.
 
 routes() ->
+    %% The following defines the "handler" modules to be used by Cowboy for each of the routes
+    %% expected by this app.  The '_' pattern matches any host. Routes can be specified by the
+    %% host the request is directed to. The following 2 lists specify the route segment following
+    %% the hostname. "/status" is the first route (e.g., http://somehost/status) and has an 
+    %% associated handler module of ez_status_handler.  The "/weather" route is defined in a similar
+    %% manner.  It has some extra elements which are explained below.
     [
      {'_', [
             {"/status", ez_status_handler, []},
-            {"/weather", ez_weather_handler, []}
+            %% ":resource" is the binding used to retrieve this path segment needed to distinguish 
+            %% between the "cities" and "city" resources
+            %% ":city" is an optional path element (designated by the surrounding brackets). It is
+            %% used to retrieve the name of the city when ":resource" is "city".
+            {"/weather/:resource/[:city]", ez_weather_handler, []} 
            ]}
     ].
 

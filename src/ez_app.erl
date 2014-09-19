@@ -41,7 +41,7 @@ setup_cowboy() ->
     Port      = port(),
     TransOpts = [{port, Port}],
     ProtoOpts = [{env, [{dispatch, Dispatch}]}],
-    C_ACCEPTORS = 100,
+    C_ACCEPTORS = 5,
     case cowboy:start_http(http, C_ACCEPTORS, TransOpts, ProtoOpts) of
         {ok, _} ->
             lager:info("Starting web service");

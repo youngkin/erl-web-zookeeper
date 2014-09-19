@@ -25,9 +25,15 @@ reconfigure() ->
 
 init([]) ->
     %%{ok, {{one_for_one, 10, 10}, specs()}}.
-   {ok, {{one_for_one, 10, 10}, [{ez_data,{ez_data,start_link,[[{localhost, 2181,30000,10000},
-		{ localhost, 2182,30000,10000},
-		{ localhost, 2183,30000,10000}],"",[]]},permanent,5000,worker,[ez_data]}]}}.
+   {ok, {{rest_for_one, 10, 10}, 
+         [
+          {ez_data,{ez_data,start_link,[[{localhost, 2181,30000,10000},
+    		{ localhost, 2182,30000,10000},
+    		{ localhost, 2183,30000,10000}],"",[]]},permanent,5000,worker,[ez_data]},
+          {ez_config, {ez_config, start_link, []}, permanent, 5000, worker, [ez_config]}
+         ] 
+        }
+   }.
 
 %% ===================================================================
 %% Internal functions

@@ -85,7 +85,7 @@ to_html_weather(Req, State) ->
                     
             HtmlEnd = <<"</body>\n</html>">>,
             
-            Body = <<HtmlStart/binary, ReturnBody/binary, HtmlEnd/binary>>;
+            <<HtmlStart/binary, ReturnBody/binary, HtmlEnd/binary>>;
         _ ->
             cowboy_req:reply(400, Req3),
             halt
@@ -104,8 +104,8 @@ to_json_weather(Req, State) ->
     RequestedResource = binary_to_list(RequestedResourceBinary),
     RequestedCity = case is_atom(RequestedCityBinary) of
                         false -> binary_to_list(RequestedCityBinary);
-                        %% RequestedCity will only be an atom if it wasn't part of the URL
-                        %% In this case it's value is never used.
+                        %% RequestedCity will only be an atom (undefined) if it wasn't part of the
+                        %% URL. In this case it's value is never used.
                         true -> undefined
                     end,
 
@@ -134,12 +134,18 @@ to_text_weather(Req, State) ->
 
 from_json_weather_update(Req, State) ->
     lager:debug("Enter"),
-    {ok, Req2} = validate_request(Req),
-    {ok, Body, Req3} = cowboy_req:body(Req2),
+
+    %% TODO: Validate request so nothing nasty gets in ZK
+    %% {ok, Req2} = validate_request(Req),
+    {ok, Body, Req3} = cowboy_req:body(Req),
     lager:debug("Body contents: ~p", [Body]),
-    %% TODO: Just echoing the input for now, need to do something more sophisticated...
-    Req4 = cowboy_req:set_resp_body(Body, Req3),
-    {true, Req4, State}.
+    
+    %% TODO: putting the Body into ZK as-is.  Need to extract city and weather from Body and
+    %% TODO: use city to create the resource (e.g., denver) and the weather to create the
+    %% TODO: associated data (e.g., "clear").
+    ez_data:create("/ez/weather/cities/denver", Body),
+    ez_data:set("/ez/weather/cities/denver", Body),
+    {true, Req3, State}.
 
 terminate(_Reason, _Req, _State) -> ok.
 
@@ -236,8 +242,10 @@ validate_resource(Resource) ->
         _ -> error
     end.
 
-validate_request(Req) ->
-    finish_this.
+%% validate_request(_Req) ->
+%%     %% TODO: This may need to be implemented if ZK is susceptible to SQL-injection type attacks.
+%%     %% It doesn't seem to be an issue though.
+%%     finish_this.
 
 %% TODO: Should these methods return binaries?
 get_cities() ->
@@ -245,8 +253,13 @@ get_cities() ->
     ["denver","tuscon", "seattle"].
 
 get_city_weather(City) ->
-    %% TODO: get from Zookeeper
-    <<"cloudy">>.
+    lager:debug("City: ~p", [City]),
+    PathList = ["/ez/weather/cities/", City],
+    Path = lists:flatten(PathList),
+    lager:debug("Query path: ~p", [Path]),
+    {ok, {CityWeatherBinary, _}} = ez_data:get(Path),
+    lager:debug("~p weather(binary): ~p", [City, CityWeatherBinary]),
+    CityWeatherBinary.
 
 get_base_url() ->
     HttpHost = case application:get_env(ez, http_host) of

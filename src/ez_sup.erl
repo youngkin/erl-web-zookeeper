@@ -1,5 +1,5 @@
 %% ===================================================================
-%% @author uyounri
+%% @author youngkin
 %% @doc This is the main (and only) supervisor for the ez application. 
 %%
 %% It starts the gen_servers needed to communicate with Zookeeper and

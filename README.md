@@ -33,20 +33,27 @@ This could be better, i.e., with make handling all this.
 
 `curl -i -H "Accept: text/plain" http://localhost:8080/status`
 
-2. GET data (weather) from service. It currently returns a hard-coded response.
+2. POST data (weather) to service (for Denver). Change the value of the last node to whatever city desired to set the weather conditions for that city.
 
-`curl -i -H "Accept: application/json" http://localhost:8080/weather`
+`curl -i -X POST -H "Content-Type: application/json" -d 'clear' http://localhost:8080/weather/city/denver`
 
-3. POST data (weather) to service. It currently only echoes what was POSTed.
+3. GET data (weather) from service (for Denver).  Change the value of the last node to whatever city desired to get the weather conditions for that city.
 
-`curl -i -X POST -H "Content-Type: application/json" -d 'here is some weather info' http://localhost:8080/weather`
+`curl -i -H "Accept: text/plain" http://localhost:8080/weather/city/denver`
 
-# Setup - TODO
+3. GET data (weather) from service for all available cities with associated weather conditions.
+
+`curl -i -H "Accept: text/plain" http://localhost:8080/weather/cities`
+
+# Additional information
 ## Release - TODO
 ## Zookeeper - TODO
 ## Cowboy - TODO
 
 # TODO:
 1. Package as a release and distribute. Document how to do this.
-2. Integrate with Zookeeper
+2. Implement better support for accepting actual JSON content on POST requests
+3. Protect against GET requests for non-existent city weather data. Should return a 404 NOT FOUND. It currently returns 500.
+4. Get cities from Zookeeper instead of being hardcoded like it currently is. As is, it returns a
+hard-coded city list of [denver, tucson, seattle].
 

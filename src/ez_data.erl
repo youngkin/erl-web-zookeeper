@@ -1,11 +1,14 @@
 %% ===================================================================
-%% @author ez on github
+%% @author ezk on github - https://github.com/campanja/ezk
 %% @doc This module provides all the capability needed to interact with
 %% Zookeeper. 
 %%
 %% This module is treated as a black-box in that no additional documentation
 %% (except for this module description) has been added. Of course the code
 %% can be read if desired to find out more about how its implemented.
+%%
+%% This module has been modified from the original source posted by
+%% campanja/ezk on github.
 %%
 %% ===================================================================
 -module(ez_data).

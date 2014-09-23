@@ -1,5 +1,5 @@
 %% ===================================================================
-%% @author uyounri
+%% @author youngkin
 %% @doc This module simply creates the initial set of Zookeeper znodes
 %% needed by the application, namely "/ez/weather/cities". The actual
 %% weather data will be stored under this znode structure as

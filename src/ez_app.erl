@@ -1,5 +1,5 @@
 %% ===================================================================
-%% @author uyounri
+%% @author youngkin
 %% @doc This is the main application module for the ez application. 
 %%
 %% "ez" supports getting and setting weather data for a city. It is

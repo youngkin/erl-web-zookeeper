@@ -1,5 +1,5 @@
 %% ===================================================================
-%% @author uyounri
+%% @author youngkin
 %% @doc This module is the cowboy callback module used to get application
 %% status information. Currently it merely responds with the port used
 %% by Cowboy to accept requests. This indicates that it is healthy and

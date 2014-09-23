@@ -45,6 +45,91 @@ This could be better, i.e., with make handling all this.
 
 `curl -i -H "Accept: text/plain" http://localhost:8080/weather/cities`
 
+# REST API
+## http://example.com/status
+### GET
+
+Returns the current status of the application
+
+Success: 200
+
+Returns application/json, text/plain, text/html formatted data (see below)
+
+### PUT
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
+### POST
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
+### DELETE
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
+## Example output
+### Status 
+
+`{ “Cowboy port”: number }`
+
+```
+application/json GET Example (status)
+{ “Cowboy port”: 8080 }
+```
+
+```
+text/plain GET Example (status)
+{ “Cowboy port”: 8080 }
+```
+
+```
+text/html GET Example (status)
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>EZ Status</title>
+</head>
+<body>
+    <p><em><center>EZ Status</center></em></p>
+    <p>Cowboy Port: 8080</p>
+</body>
+</html>
+```
+
+### Weather JSON
+```
+{ “city”: string,
+  “weather”: string}
+```
+
+PUT Example (weather/city/city_name)
+```
+{ “city” : “denver”,
+  “weather” : “clear” }
+```
+
+GET Example (weather/cities)
+```
+{ “city” : “http://example.com/weather/city/denver”,
+  “city” : “http://example.com/weather/city/seattle”, 
+  …
+}
+```
+
+GET Example (weather/city)
+```
+{ “city” : “denver”,
+  “weather” : “clear” }
+```
+
+
+
 # Additional information
 ## Release - TODO
 ## Zookeeper - TODO

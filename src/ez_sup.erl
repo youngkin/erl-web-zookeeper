@@ -1,3 +1,11 @@
+%% ===================================================================
+%% @author uyounri
+%% @doc This is the main (and only) supervisor for the ez application. 
+%%
+%% It starts the gen_servers needed to communicate with Zookeeper and
+%% initializing the Zookeeper znodes (data structures) used by the app. 
+%%
+%% ===================================================================
 -module(ez_sup).
 
 -behaviour(supervisor).
@@ -24,7 +32,9 @@ reconfigure() ->
 %% ===================================================================
 
 init([]) ->
-    %%{ok, {{one_for_one, 10, 10}, specs()}}.
+    %% ez_data is a gen_server used to communicate with Zookeeper.
+    %% ez_config is a gen_server that sets up the initial Zookeeper
+    %% znodes used by the application.
    {ok, {{rest_for_one, 10, 10}, 
          [
           {ez_data,{ez_data,start_link,[[{localhost, 2181,30000,10000},

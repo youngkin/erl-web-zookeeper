@@ -1,5 +1,16 @@
+%% ===================================================================
 %% @author uyounri
-%% @doc @todo Add description to status.
+%% @doc This module is the cowboy callback module used to get application
+%% status information. Currently it merely responds with the port used
+%% by Cowboy to accept requests. This indicates that it is healthy and
+%% the simple Cowboy port config information. It could be extended to
+%% expose additional status information if desired.  This might involve
+%% defining additional Cowboy routes in ez_app.erl and the various
+%% content_types_provided, perhaps with some bound route data as 
+%% demonstrated in ez_app.erl for the ez_weather_handler.erl callback
+%% module. 
+%%
+%% ===================================================================
 
 -module(ez_status_handler).
 

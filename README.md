@@ -1,17 +1,12 @@
 # erl-web-zookeeper
 
-Sample app demonstrating use of Erlang supervision, release with multiple apps, web interface, 
-and quorum election via Zookeeper.  What does this app do?
-   1. Uses zookeeper for configuration data.  May also use for quorum election, not sure yet.
-   2. Accepts weather info via ReST interface
-      a. This data is stored in Mnesia
-   3. Accepts requests for weather info via the ReST interface
-   4. Demonstrates reactive concepts via exclusive use of async message passing and an Erlang
-      implementation of "futures" 
+"ez" is an application that demonstrates the usage of:
+1. Rebar - see the rebar.config file in the project root directory for details.
+2. Starting multiple, dependent, applications. For example, this project depends on lager and zookeeper.  See the start.sh file for more details, particularly the application:ensure_all_started() directive.  This starts all the applications listed in the application resource file's, src/ez.app.src, {applications, [...]} tuple for the complete set of applications.
+3. Lager as a logging replacement for the standard Erlang logger. See the erl-zookeeper.config file for Lager configuration settings.
+4. Cowboy to enable support for a ReSTful interface to the application. n this application the interface is used to get and set weather data.  
+5. Zookeeper is used as the data store for weather data. 
 
-
-**NOTE:** This is very early days for this project, it's not quite ready to use for anything.  Just 
-wanted to get it up on github.
 
 # Prerequisites
 

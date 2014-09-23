@@ -1,5 +1,10 @@
+%% ===================================================================
 %% @author uyounri
-%% @doc @todo Add description to ez_weather_handler.
+%% @doc This is the Cowboy callback module for city weather information. 
+%%
+%% @todo Finish documenting... 
+%%
+%% ===================================================================
 
 
 -module(ez_weather_handler).

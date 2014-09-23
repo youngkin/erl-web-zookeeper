@@ -1,5 +1,13 @@
+%% ===================================================================
 %% @author uyounri
-%% @doc @todo Add description to ez_config.
+%% @doc This module simply creates the initial set of Zookeeper znodes
+%% needed by the application, namely "/ez/weather/cities". The actual
+%% weather data will be stored under this znode structure as
+%% .../cityname/weathertype such as .../denver/clear.
+%%
+%% Once started and initialized, this gen_server does nothing. 
+%%
+%% ===================================================================
 
 -module(ez_config).
 

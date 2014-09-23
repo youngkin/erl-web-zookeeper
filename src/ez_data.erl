@@ -1,3 +1,13 @@
+%% ===================================================================
+%% @author ez on github
+%% @doc This module provides all the capability needed to interact with
+%% Zookeeper. 
+%%
+%% This module is treated as a black-box in that no additional documentation
+%% (except for this module description) has been added. Of course the code
+%% can be read if desired to find out more about how its implemented.
+%%
+%% ===================================================================
 -module(ez_data).
 
 -behaviour(gen_server).

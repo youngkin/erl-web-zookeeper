@@ -1,6 +1,7 @@
 # erl-web-zookeeper
 
 "ez" is an application that demonstrates the usage of:
+
 1. Rebar - see the rebar.config file in the project root directory for details.
 2. Starting multiple, dependent, applications. For example, this project depends on lager and zookeeper.  See the start.sh file for more details, particularly the application:ensure_all_started() directive.  This starts all the applications listed in the application resource file's, src/ez.app.src, {applications, [...]} tuple for the complete set of applications.
 3. Lager as a logging replacement for the standard Erlang logger. See the erl-zookeeper.config file for Lager configuration settings.

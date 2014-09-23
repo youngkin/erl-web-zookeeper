@@ -21,6 +21,17 @@ This could be better, i.e., with make handling all this.
 2. `$ ./rebar compile`
 
 # Running
+Before running the app you'll need to take a look at the src/ez.app.sr file. For example, the {hosts, [...]}
+tuple needs to be modified to point to the Zookeeper instance that supports the app. The values included
+should be sufficient for cases where Zookeeper is running locally using the Zookeeper configuration defaults.
+
+The {env, [{http_host, xxx}, {http_port, xxx}]} needs to reflect your local runtime environment for the
+application. The defaults will be sufficient in most cases.
+
+If these configuration settings have been changed you'll need to rebuild the app as described above.
+
+Do one of the following to start the app:
+
 1. `$ ./start`
 2. Or `$ ./start_in_shell` to start the service in an Erlang shell
 

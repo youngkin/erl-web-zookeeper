@@ -1,3 +1,30 @@
+%% ===================================================================
+%% @author youngkin
+%% @doc This is the main application module for the ez application. 
+%%
+%% "ez" supports getting and setting weather data for a city. It is
+%% meant to be a simple means of exploring several different Erlang
+%% technologies/capabilities.
+%%
+%% "ez" is an application that demonstrates the usage of:
+%%    1. Rebar - see the rebar.config file in the project root directory
+%%               for details.
+%%    2. Starting multiple, dependent, applications. For example, this
+%%       project depends on lager and zookeeper.  See the start.sh file for
+%%       more details, particularly the application:ensure_all_started()
+%%       directive.  This starts all the applications listed in the 
+%%       application resource file's, src/ez.app.src, {applications, [...]}
+%%       tuple for the complete set of applications.
+%%    3. Lager as a logging replacement for the standard Erlang logger.
+%%       See the erl-zookeeper.config file for Lager configuration settings.
+%%    4. Cowboy to enable support for a ReSTful interface to the application.
+%%       In this application the interface is used to get and set weather
+%%       data.  
+%%    5. Zookeeper is used as the data store for weather data. 
+%%
+%% ===================================================================
+
+
 -module(ez_app).
 
 -behaviour(application).
@@ -7,14 +34,14 @@
 
 -define(APP, ez).
 
-%% =========================================
+%% ===================================================================
 %% Admin API
-%% =========================================
-%% @doc Starts the application
+%% ===================================================================
 start() ->
-  application:ensure_all_started(?APP).
+    %% Starts all dependent applications listed in {applications, [...]} 
+    %% tuple in ez.app.src.
+    application:ensure_all_started(?APP).
 
-%% @doc Stops the application
 stop() -> application:stop(?APP).
 
 %% ===================================================================
@@ -29,31 +56,11 @@ stop(_State) ->
     ok.
 
 start_phase(init, _StartType, _StartArgs) ->
-    start_deps().
+    ok.
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-dep_start(App, Type) ->
-    start_ok(App, Type, application:start(App, Type)).
-
-start_ok(_App, _Type, ok) -> ok;
-start_ok(_App, _Type, {error, {already_started, _App}}) -> ok;
-start_ok(App, Type, {error, {not_started, Dep}}) ->
-    ok = dep_start(Dep, Type),
-    dep_start(App, Type);
-start_ok(App, _Type, {error, Reason}) ->
-    erlang:error({app_start_failed, App, Reason}).
-
-start_deps() ->
-    application:load(?APP),
-    case application:get_key(?APP, deps) of
-        {ok, Deps} ->
-            [dep_start(App, permanent) || App <- Deps];
-        undefined -> ok
-    end,
-    ok.
 
 setup_cowboy() ->
     Routes    = routes(),
@@ -61,7 +68,7 @@ setup_cowboy() ->
     Port      = port(),
     TransOpts = [{port, Port}],
     ProtoOpts = [{env, [{dispatch, Dispatch}]}],
-    C_ACCEPTORS = 100,
+    C_ACCEPTORS = 5,
     case cowboy:start_http(http, C_ACCEPTORS, TransOpts, ProtoOpts) of
         {ok, _} ->
             lager:info("Starting web service");
@@ -69,10 +76,32 @@ setup_cowboy() ->
             lager:error("Unexpected result starting web service, ~p", [Error])
     end.
 
+%%
+%% @doc routes() defines the set of ReST resources (aka routes) exposed by the application.  There
+%% are currently 2 exposed resources (or resource types):
+%% 1. /status - reports current status info. As indicated below, see ez_status_handler.erl for details.
+%% 2. /weather/:resource/[:city] - sets city specific weather information; gets city specific weather
+%% information, or returns URLs for all cities with recorded weather information. :resource is a 
+%% Cowboy binding that can be used to dereference the actual value stored at this place in the URL
+%% (e.g., cities or city). [:city] is a Cowboy binding for the actual city (e.g., Denver) for setting
+%% or retrieval.  The brackets indicate this binding is optional (i.e., it won't exist if :resource)
+%% is "cities").
+%%
 routes() ->
+    %% The following defines the "handler" modules to be used by Cowboy for each of the routes
+    %% expected by this app.  The '_' pattern matches any host. Routes can be specified by the
+    %% host the request is directed to. The following 2 lists specify the route segment following
+    %% the hostname. "/status" is the first route (e.g., http://somehost/status) and has an 
+    %% associated handler module of ez_status_handler.  The "/weather" route is defined in a similar
+    %% manner.  It has some extra elements which are explained below.
     [
      {'_', [
-            {"/status", ez_status, []}
+            {"/status", ez_status_handler, []},
+            %% ":resource" is the binding used to retrieve this path segment needed to distinguish 
+            %% between the "cities" and "city" resources
+            %% ":city" is an optional path element (designated by the surrounding brackets). It is
+            %% used to retrieve the name of the city when ":resource" is "city".
+            {"/weather/:resource/[:city]", ez_weather_handler, []} 
            ]}
     ].
 
@@ -80,6 +109,7 @@ port() ->
     case os:getenv("PORT") of
         false ->
             {ok, Port} = application:get_env(http_port),
+            lager:debug("application:get_env(http_port): ~p", [Port]),
             Port;
         Other ->
             list_to_integer(Other)

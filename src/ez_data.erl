@@ -1,3 +1,16 @@
+%% ===================================================================
+%% @author ezk on github - https://github.com/campanja/ezk
+%% @doc This module provides all the capability needed to interact with
+%% Zookeeper. 
+%%
+%% This module is treated as a black-box in that no additional documentation
+%% (except for this module description) has been added. Of course the code
+%% can be read if desired to find out more about how its implemented.
+%%
+%% This module has been modified from the original source posted by
+%% campanja/ezk on github.
+%%
+%% ===================================================================
 -module(ez_data).
 
 -behaviour(gen_server).
@@ -132,55 +145,55 @@ handle_call(Request, _From, #state{zk_connection = undefined} = State) ->
 handle_call({create, Path, Data}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:create(ZK, FullPath, Data),
-    lager:info("{create ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("{create ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({create, Path, Data, Typ}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:create(ZK, FullPath, Data, Typ),
-    lager:info("{create ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("{create ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({delete, Path}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:delete(ZK, FullPath),
-    lager:info("[{delete ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("[{delete ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({exists, Path}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:exists(ZK, FullPath),
-    lager:info("{exists ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("{exists ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({get, Path}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:get(ZK, FullPath),
-    lager:info("{get ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("{get ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({ls, Path}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:ls(ZK, FullPath),
-    lager:info("[handle_call] {ls ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("[handle_call] {ls ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({ls2, Path}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:ls2(ZK, FullPath),
-    lager:info("[handle_call] {ls2 ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("[handle_call] {ls2 ~p} = ~120p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({getw, Path, FromPid, FromTag}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:get(ZK, FullPath, FromPid, FromTag),
-    lager:info("{getw ~p ~p ~p} = ~120p", [{Path, FullPath}, FromPid, FromTag, ZKResponse]),
+    lager:debug("{getw ~p ~p ~p} = ~120p", [{Path, FullPath}, FromPid, FromTag, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({set, Path, Data}, _From, #state{zk_connection = ZK, chroot = Chroot} = State) ->
     FullPath = chroot_path(Chroot, Path),
     ZKResponse = ezk:set(ZK, FullPath, Data),
-    lager:info("{set ~p} = ~p", [{Path, FullPath}, ZKResponse]),
+    lager:debug("{set ~p} = ~p", [{Path, FullPath}, ZKResponse]),
     {reply, ZKResponse, State};
 
 handle_call({add_consumer, Pid}, _From, #state{consumers = OldConsumers} = State) ->

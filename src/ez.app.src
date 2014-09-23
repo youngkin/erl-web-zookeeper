@@ -14,14 +14,12 @@
                   ezk,
                   cowboy
                  ]},
-  {deps, [sasl, syntax_tools, compiler, syntax_tools, goldrush, lager, ezk, cowboy]},
   {mod, { ez_app, []}},
   {hosts, [{localhost, 2181},
 		{ localhost, 2182},
 		{ localhost, 2183}]
 
 	},
-  {start_phases, [{init, []}]},
   {chroot, ""},
-  {env, [{http_port, 8080}]}
+  {env, [{http_port, 8080}, {http_host, "localhost"}]}
  ]}.

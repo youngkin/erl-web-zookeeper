@@ -73,19 +73,81 @@ Not supported
 
 Error: 405, Method not allowed, no retry
 
+## http://example.com/weather/cities
+### GET
+
+Returns the URLs of all currently defined cities.  
+
+Success: 200
+Error: 404 NOT FOUND
+
+Error: 400 if the URL has a bad path element (e.g., /weather/sites vs. /weather/cities or /weather/city)
+
+Returns application/json, text/plain, text/html formatted data (see below)
+
+### PUT
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
+### POST
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
+### DELETE
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
+## http://example.com/weather/city/some_city_name
+### GET
+
+Returns the weather data of the specified city or a 404 NOT FOUND
+
+Error: 400 if the URL has a bad path element (e.g., /weather/sites vs. /weather/cities or /weather/city)
+
+Returns application/json, text/plain, text/html formatted data (see below)
+
+## PUT
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
+### POST
+
+Adds/updates the specified city
+
+Success: 204, Created or updated;
+Error: 400, bad request, donâ€™t retry
+Error: 500, server error, retry
+
+Accepts only application/json formatted data (see below)
+
+
+### DELETE
+
+Not supported
+
+Error: 405, Method not allowed, no retry
+
 ## Example output
 ### Status 
 
-`{ ÒCowboy portÓ: number }`
+`{ ï¿½Cowboy portï¿½: number }`
 
 ```
 application/json GET Example (status)
-{ ÒCowboy portÓ: 8080 }
+{ ï¿½Cowboy portï¿½: 8080 }
 ```
 
 ```
 text/plain GET Example (status)
-{ ÒCowboy portÓ: 8080 }
+{ ï¿½Cowboy portï¿½: 8080 }
 ```
 
 ```
@@ -104,28 +166,28 @@ text/html GET Example (status)
 
 ### Weather JSON
 ```
-{ ÒcityÓ: string,
-  ÒweatherÓ: string}
+{ ï¿½cityï¿½: string,
+  ï¿½weatherï¿½: string}
 ```
 
 PUT Example (weather/city/city_name)
 ```
-{ ÒcityÓ : ÒdenverÓ,
-  ÒweatherÓ : ÒclearÓ }
+{ ï¿½cityï¿½ : ï¿½denverï¿½,
+  ï¿½weatherï¿½ : ï¿½clearï¿½ }
 ```
 
 GET Example (weather/cities)
 ```
-{ ÒcityÓ : Òhttp://example.com/weather/city/denverÓ,
-  ÒcityÓ : Òhttp://example.com/weather/city/seattleÓ, 
-  É
+{ ï¿½cityï¿½ : ï¿½http://example.com/weather/city/denverï¿½,
+  ï¿½cityï¿½ : ï¿½http://example.com/weather/city/seattleï¿½, 
+  ï¿½
 }
 ```
 
 GET Example (weather/city)
 ```
-{ ÒcityÓ : ÒdenverÓ,
-  ÒweatherÓ : ÒclearÓ }
+{ ï¿½cityï¿½ : ï¿½denverï¿½,
+  ï¿½weatherï¿½ : ï¿½clearï¿½ }
 ```
 
 

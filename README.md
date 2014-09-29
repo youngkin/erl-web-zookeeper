@@ -1,4 +1,33 @@
-# erl-web-zookeeper
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [erl-web-zookeeper](#user-content-erl-web-zookeeper)
+- [Prerequisites](#user-content-prerequisites)
+- [Building](#user-content-building)
+- [Building an Erlang release](#user-content-building-an-erlang-release)
+    - [Rebar & reltool](#user-content-rebar--reltool)
+    - [relx](#user-content-relx)
+- [Running](#user-content-running)
+- [Take it for a spin](#user-content-take-it-for-a-spin)
+- [REST API](#user-content-rest-api)
+    - [http://example.com/status](#user-content-httpexamplecomstatus)
+        - [GET](#user-content-get)
+        - [PUT](#user-content-put)
+        - [POST](#user-content-post)
+        - [DELETE](#user-content-delete)
+    - [http://example.com/weather/cities](#user-content-httpexamplecomweathercities)
+        - [GET](#user-content-get-1)
+        - [PUT](#user-content-put-1)
+        - [POST](#user-content-post-1)
+        - [DELETE](#user-content-delete-1)
+    - [http://example.com/weather/city/some_city_name](#user-content-httpexamplecomweathercitysome_city_name)
+        - [GET](#user-content-get-2)
+    - [PUT](#user-content-put-2)
+        - [POST](#user-content-post-2)
+        - [DELETE](#user-content-delete-2)
+    - [Example output](#user-content-example-output)
+        - [Status](#user-content-status)
+        - [Weather JSON](#user-content-weather-json)
+- [TODO:](#user-content-todo)# erl-web-zookeeper
 
 "ez" is an application that demonstrates the usage of:
 

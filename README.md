@@ -27,7 +27,9 @@
     - [Example output](#user-content-example-output)
         - [Status](#user-content-status)
         - [Weather JSON](#user-content-weather-json)
-- [TODO:](#user-content-todo)# erl-web-zookeeper
+- [TODO:](#user-content-todo)
+
+# erl-web-zookeeper
 
 "ez" is an application that demonstrates the usage of:
 

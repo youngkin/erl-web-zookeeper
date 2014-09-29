@@ -15,6 +15,7 @@
                   cowboy
                  ]},
   {mod, { ez_app, []}},
+  {modules, []},
   {hosts, [{localhost, 2181},
 		{ localhost, 2182},
 		{ localhost, 2183}]

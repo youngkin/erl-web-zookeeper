@@ -20,6 +20,33 @@ This could be better, i.e., with make handling all this.
 1. `$ ./rebar get-deps`
 2. `$ ./rebar compile`
 
+# Building an Erlang release
+## Rebar & reltool
+`rel/reltool.config` contains the directives that specify how the release is to be built. Create a 
+tarball of `rel/ez` to create a distributable release that can be unzipped on the target machine.
+
+1. `$ ./rebar get-deps`
+2. `$ ./rebar clean compile`
+3. `$ ./rebar generate`
+
+The last step creates the release in `rel/ez`. When rebuilding a release it is best to remove the
+`ez` directory before running the above steps.
+
+## relx
+`relx.config` contains the directives that specify how the release is to be built using `relx`. This
+file is much simpler than the corresponding `rel/reltool.config` as it gets much of the dependency
+information from `src/ez.app.src`. 
+
+1. `$ ./rebar get-deps`
+2. `$ ./rebar clean compile`
+3. `$ relx release tar`
+
+The last step, `relx release tar`, creates the 
+release and creates the tarball for distribution. This saves a step over `reltool`. When rebuilding a 
+release it is best to remove the `_rel` directory before running the above steps.
+
+
+
 # Running
 Before running the app you'll need to take a look at the src/ez.app.sr file. For example, the `{hosts, [...]}`
 tuple needs to be modified to point to the Zookeeper instance that supports the app. The values included
@@ -202,16 +229,10 @@ GET Example (weather/city)
 ```
 
 
-
-# Additional information
-## Release - TODO
-## Zookeeper - TODO
-## Cowboy - TODO
-
 # TODO:
-1. Package as a release and distribute. Document how to do this.
-2. Implement better support for accepting actual JSON content on POST requests
-3. Protect against GET requests for non-existent city weather data. Should return a 404 NOT FOUND. It currently returns 500.
-4. Get cities from Zookeeper instead of being hardcoded like it currently is. As is, it returns a
+1. Implement better support for accepting actual JSON content on POST requests
+2. Protect against GET requests for non-existent city weather data. Should return a 404 NOT FOUND. It currently returns 500.
+3. Get cities from Zookeeper instead of being hardcoded like it currently is. As is, it returns a
 hard-coded city list of [denver, tucson, seattle].
+4. Add `make` support
 
